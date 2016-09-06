@@ -1,0 +1,18 @@
+{
+  "name": "batch_downloader",
+  "version": "1.0.0",
+  "description": "Download music from YouTube by specifying a list of links or song names.",
+  "main": "download.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "naoey",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "commander": "^2.9.0",
+    "valid-url": "^1.0.9",
+    "youtube-api": "^2.0.2",
+    "youtube-dl": "^1.11.1"
+  }
+}

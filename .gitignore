@@ -1,0 +1,15 @@
+# OS crud
+.DS_Store
+Thumbs.db
+desktop.ini
+Icon*
+
+# Dumps
+logs/
+output/
+
+# Secrets
+private/
+
+# Node
+node_modules/

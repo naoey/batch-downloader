@@ -22,8 +22,7 @@ program
     .option('-u, --url', 'Parse tracks as URLs')
     //TODO: Handle trailing slashes in any dirnames/paths
     .option('-o, --output-dir [dir]', 'Output directory [output]', 'output')
-    .option('--client-id [key]', 'Google API auth key. Required for searching when input is not URL', null)
-    .option('--client-secret [key]', 'Google API auth key. Required for searching when input is not URL', null)
+    .option('--api-key [key]', 'Google API key', null)
     .option('-l, --log-dir [dir]', 'Dir to store logs in', 'logs')
     .option('-q, -quiet', 'No logging')
     .option('-c, --credentials [file]', 'Credentials file for Google APIs.', null)
@@ -64,25 +63,21 @@ utils.checkExistingOutputDir(program.outputDir)
             })
         }
     } else {
+        var key = null;
+
         if (program.credentials != null && program.credentials.indexOf('.json') == program.credentials.length-5) {
             var creds = require(program.credentials);
-
-            search.authenticate(creds['youtube']);
+            key = creds.youtube.key;
         } else if (program.credentials != null && program.credentials.indexOf('.txt') == program.credentials.length-4) {
-            var data = fs.readFileSync('program.credentials', 'utf-8').split('\n');
-            var key = {
-                'client_id': data[0],
-                'client_secret': data[1]
-            };
-
-            search.authenticate(key);
-        } else if (program.clientId != null && program.clientSecret != null) {
-            search.authenticate({
-                client_id: program.clientId,
-                client_secret: program.clientSecret
-            });
+            key = fs.readFileSync('program.credentials', 'utf-8').split('\n');
+        } else if (program.apiKey != null) {
+            key = program.apiKey;
+        } else {
+            utils.log('Missing Google API key');
+            return new Error('Missing Google API key');
         }
 
+        search.authenticate(key);
         if (program.fromFile != null) {
             utils.getDownloadList(program.fromFile)
             .then(function(list) {

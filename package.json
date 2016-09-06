@@ -2,7 +2,7 @@
   "name": "batch_downloader",
   "version": "1.0.0",
   "description": "Download music from YouTube by specifying a list of links or song names.",
-  "main": "download.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

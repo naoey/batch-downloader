@@ -26,7 +26,7 @@ program
     .option('--client-secret [key]', 'Google API auth key. Required for searching when input is not URL', null)
     .option('-l, --log-dir [dir]', 'Dir to store logs in', 'logs')
     .option('-q, -quiet', 'No logging')
-    .option('-c, --credentials [file]', 'Credentials file for Google APIs', null)
+    .option('-c, --credentials [file]', 'Credentials file for Google APIs.', null)
     .parse(process.argv);
 
 var log = utils.log;
@@ -64,11 +64,48 @@ utils.checkExistingOutputDir(program.outputDir)
             })
         }
     } else {
-        if (program.clientId == null && program.clientSecret == null && program.credentials == null) {
-            new Error('Google API key credentials are needed for searching videos');
+        if (program.credentials != null && program.credentials.indexOf('.json') == program.credentials.length-5) {
+            var creds = require(program.credentials);
+
+            search.authenticate(creds['youtube']);
+        } else if (program.credentials != null && program.credentials.indexOf('.txt') == program.credentials.length-4) {
+            var data = fs.readFileSync('program.credentials', 'utf-8').split('\n');
+            var key = {
+                'client_id': data[0],
+                'client_secret': data[1]
+            };
+
+            search.authenticate(key);
+        } else if (program.clientId != null && program.clientSecret != null) {
+            search.authenticate({
+                client_id: program.clientId,
+                client_secret: program.clientSecret
+            });
         }
 
+        if (program.fromFile != null) {
+            utils.getDownloadList(program.fromFile)
+            .then(function(list) {
+                var cleanedList = [];
+                list.forEach(function(item) {
+                    if (item.length > 0) {
+                        cleanedList.push(utils.clean(item));
+                    }
+                });
 
+                return search.searchBatch(cleanedList);
+            })
+            .then(function(urls) {
+                urls.forEach(function(url) {
+                    download(url);
+                });
+            });
+        } else if (program.single != null) {
+            search.search(utils.clean(program.single))
+            .then(function(url) {
+                download(url);
+            });
+        }
     }
 })
 .catch(function(err) {

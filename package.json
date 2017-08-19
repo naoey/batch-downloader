@@ -1,6 +1,6 @@
 {
   "name": "batch_downloader",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Download music from YouTube by specifying a list of links or song names.",
   "main": "index.js",
   "scripts": {
